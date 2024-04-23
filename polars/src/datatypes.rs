@@ -231,7 +231,7 @@ impl ToStr for ArrowDataType {
             ArrowDataType::Interval(IntervalUnit::DayTime) => "interval(daytime)",
             ArrowDataType::Interval(IntervalUnit::YearMonth) => "interval(year-month)",
             ArrowDataType::LargeList(tp) => return format!("list [{}]", tp.to_str()),
-            _ => panic!(format!("{:?} not implemented", self)),
+            _ => panic!("{:?} not implemented", self),
         };
         s.into()
     }

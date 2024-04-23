@@ -29,14 +29,14 @@ where
         self.downcast_chunks()
             .iter()
             .filter_map(|&a| compute::min(a))
-            .fold_first(|acc, v| if acc < v { acc } else { v })
+            .reduce(|acc, v| if acc < v { acc } else { v })
     }
 
     fn max(&self) -> Option<T::Native> {
         self.downcast_chunks()
             .iter()
             .filter_map(|&a| compute::max(a))
-            .fold_first(|acc, v| if acc > v { acc } else { v })
+            .reduce(|acc, v| if acc > v { acc } else { v })
     }
 
     fn mean(&self) -> Option<T::Native> {
@@ -128,6 +128,56 @@ impl ChunkAgg<u8> for BooleanChunked {
 #[cfg(test)]
 mod test {
     use crate::prelude::*;
+
+    #[test]
+    fn test_min() {
+        let ca = UInt32Chunked::new_from_opt_slice(
+            "a",
+            &[Some(2), Some(1), None, Some(3), Some(5), None, Some(4)],
+        );
+        assert_eq!(ca.min(), Some(1));
+        let ca = UInt32Chunked::new_from_opt_slice(
+            "a",
+            &[
+                None,
+                Some(7),
+                Some(6),
+                Some(2),
+                Some(1),
+                None,
+                Some(3),
+                Some(5),
+                None,
+                Some(4),
+            ],
+        );
+        assert_eq!(ca.min(), Some(1));
+    }
+
+    #[test]
+    fn test_max() {
+        let ca = UInt32Chunked::new_from_opt_slice(
+            "a",
+            &[Some(2), Some(1), None, Some(3), Some(5), None, Some(4)],
+        );
+        assert_eq!(ca.max(), Some(5));
+        let ca = UInt32Chunked::new_from_opt_slice(
+            "a",
+            &[
+                None,
+                Some(7),
+                Some(6),
+                Some(2),
+                Some(1),
+                None,
+                Some(3),
+                Some(5),
+                None,
+                Some(4),
+            ],
+        );
+        assert_eq!(ca.max(), Some(7));
+    }
 
     #[test]
     fn test_median() {
